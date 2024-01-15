@@ -6,7 +6,7 @@ import pickle
 import os
 
 colunas = ['tamanho','ano','garagem']
-modelo = pickle.load(open('../../models/model.pkl', 'rb'))
+modelo = pickle.load(open('models/model.pkl', 'rb'))
 
 app = Flask(__name__)
 app.config['BASIC_AUTH_USERNAME'] = os.environ.get('BASIC_AUTH_USER')
@@ -19,7 +19,7 @@ def hello():
     return 'Hello World!'
 
 @app.route('/sentimento/<frase>')
-@basic_auth.required
+#@basic_auth.required
 def sentimento(frase):
     tb = TextBlob(frase)
     tb_en = tb.translate(from_lang='pt', to='en')
@@ -27,12 +27,12 @@ def sentimento(frase):
     return "Polaridade: {}".format(polaridade)
 
 @app.route('/cotacao/', methods=['POST'])
-@basic_auth.required
+#@basic_auth.required
 def cotacao():
     dados = request.get_json()
     dados_input = [dados[col] for col in colunas]
     preco = modelo.predict([dados_input])
     return jsonify(preco=preco[0])
 
-
-app.run(debug=True, host='0.0.0.0')
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0')
